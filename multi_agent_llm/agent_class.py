@@ -2,10 +2,10 @@ from pydantic import BaseModel, Field
 
 
 class Agent(BaseModel):
-    name: str = Field(..., description="The name of the agent")
-    role: str = Field(..., description="The role of the agent")
-    function: str = Field(..., description="The function of the agent")
+    name: str = Field(..., description="O nome do agente")
+    role: str = Field(..., description="O papel do agente")
+    function: str = Field(..., description="A função do agente")
     
     def prompt(self, input_prompt: str, add_system_prompt: str = "") -> tuple:
-        system_prompt = f"You are a: {self.name}. Your role: {self.role}. Your function: {self.function}. {add_system_prompt}"
+        system_prompt = f"Você é: {self.name}. Seu papel: {self.role}. Sua função: {self.function}. {add_system_prompt}"
         return system_prompt, f"{input_prompt}"

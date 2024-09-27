@@ -13,7 +13,7 @@ long_description = (this_directory / "README.md").read_text()
 install_requires = (this_directory / "requirements.txt").read_text().splitlines()
 
 setup(
-    name="multi_agent_llm",
+    name="generalist_multi_agent_llm",
     version=version,
     description="An LLM Multi-Agent framework.",
     long_description=long_description,

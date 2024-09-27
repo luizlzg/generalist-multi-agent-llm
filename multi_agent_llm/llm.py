@@ -7,7 +7,7 @@ from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 
 class DefaultResponseSchema(BaseModel):
-    content: str = Field(..., description="The generated content")
+    content: str = Field(..., description="O conteúdo gerado")
 
 
 class LLMBase:
@@ -25,12 +25,15 @@ class LLMBase:
 
 
 class OpenAILLM(LLMBase):
-    def __init__(self, model_name: str, **kwargs):
+    def __init__(self, model_name: str, temperature: float, max_tokens: int, **kwargs):
         super().__init__(model_name, **kwargs)
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"), **kwargs)
         self.async_client = AsyncOpenAI(
             api_key=os.environ.get("OPENAI_API_KEY"), **kwargs
         )
+
+        self.temperature = temperature
+        self.max_tokens = max_tokens
 
     @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
     def generate(self, prompt: Any, schema: Optional[Type[BaseModel]] = None) -> Any:
@@ -40,6 +43,8 @@ class OpenAILLM(LLMBase):
                 model=self.model_name,
                 messages=prompt,
                 response_format=schema,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
             )
             result = completion.choices[0].message.content
             return schema.model_validate_json(result)
@@ -57,6 +62,8 @@ class OpenAILLM(LLMBase):
                 model=self.model_name,
                 messages=prompt,
                 response_format=schema,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
             )
             result = completion.choices[0].message.content
             return schema.model_validate_json(result)
